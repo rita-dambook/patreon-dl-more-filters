@@ -311,6 +311,9 @@ Note the URL shown in the output. Open this URL in a web browser to begin viewin
 
 ## Changelog
 
+3.8.2
+- Added filter `include.posts.by.title` with similar syntax to Filtering media by filename patterns
+
 3.8.1
 - YT embeds: obtain images directly from YT instead of Patreon API data, since the latter could give 0-byte content ([@Fabelwesen](https://github.com/Fabelwesen) - [#120](https://github.com/patrickkfkan/patreon-dl/issues/120)).
 
