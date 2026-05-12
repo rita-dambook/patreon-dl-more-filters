@@ -254,6 +254,18 @@ export default class PatreonDownloaderCLI {
         }
       }
     }
+    if (config.include?.postsByTitle) {
+      const v = config.include.postsByTitle;
+      if (v.startsWith('!')) {
+        const stripped = v.substring(1);
+        displayConfig.include.postsByTitle = stripped
+          ? { pattern: stripped, 'case-sensitive': false } as any
+          : null;
+      }
+      else {
+        displayConfig.include.postsByTitle = { pattern: v, 'case-sensitive': true } as any;
+      }
+    }
     return  ObjectHelper.clean(displayConfig, {
       deep: true, cleanNulls: true, cleanEmptyObjects: true
     });

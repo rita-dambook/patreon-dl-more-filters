@@ -44,6 +44,7 @@ export interface DownloaderIncludeOptions {
     audio?: string | null;
     attachments?: string | null;
   };
+  postsByTitle?: string | null;
   comments?: boolean;
 }
 
@@ -147,6 +148,7 @@ const DEFAULT_DOWNLOADER_INIT: DownloaderInit = {
       audio: null,
       attachments: null
     },
+    postsByTitle: null,
     comments: false
   },
   request: {
@@ -222,6 +224,7 @@ export function getDownloaderInit(options?: DownloaderOptions): DownloaderInit {
         audio: pickDefined(options?.include?.mediaByFilename?.audio, defaults.include.mediaByFilename.audio),
         attachments: pickDefined(options?.include?.mediaByFilename?.attachments, defaults.include.mediaByFilename.attachments)
       },
+      postsByTitle: pickDefined(options?.include?.postsByTitle, defaults.include.postsByTitle),
       comments: pickDefined(options?.include?.comments, defaults.include.comments)
     },
     request: {

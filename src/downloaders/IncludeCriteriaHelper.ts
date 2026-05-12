@@ -1,3 +1,4 @@
+import { minimatch } from "minimatch";
 import type { Post, Product } from "../entities/index.js";
 import { isYouTubeEmbed } from "../entities/Downloadable.js";
 import { type LogLevel } from "../utils/logging/Logger.js";
@@ -9,7 +10,7 @@ export type IncludeCriteriaCheckPostResult = {
   ok: true;
 } | {
   ok: false;
-  reason: 'unviewable' | 'unmetMediaTypeCriteria' | 'notInTier' | 'publishDateOutOfRange';
+  reason: 'unviewable' | 'unmetMediaTypeCriteria' | 'notInTier' | 'publishDateOutOfRange' | 'titleUnmatched';
 };
 
 export type IncludeCriteriaCheckProductResult = {
@@ -113,6 +114,27 @@ export class IncludeCriteriaHelper {
         ok: false,
         reason: 'publishDateOutOfRange'
       };
+    }
+
+    // -- 5. Config option 'include.postsByTitle'
+    let titlePattern = config.include.postsByTitle;
+    if (titlePattern) {
+      let nocase = false;
+      if (titlePattern.startsWith('!')) {
+        titlePattern = titlePattern.substring(1);
+        nocase = true;
+      }
+      if (titlePattern) {
+        const title = post.title ?? '';
+        const matched = minimatch(title, titlePattern, { nocase });
+        this.log('debug', `Config 'include.postsByTitle': test "${titlePattern}" <-> "${title}" ${matched ? 'OK' : 'failed'} (${nocase ? 'case-insensitive' : 'case-sensitive'})`);
+        if (!matched) {
+          return {
+            ok: false,
+            reason: 'titleUnmatched'
+          };
+        }
+      }
     }
 
     return {

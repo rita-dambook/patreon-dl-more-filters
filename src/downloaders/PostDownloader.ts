@@ -118,6 +118,7 @@ export default class PostDownloader extends Downloader<Post> {
       let skippedUnmetMediaTypeCriteria = 0;
       let skippedNotInTier = 0;
       let skippedPublishDateOutOfRange = 0;
+      let skippedTitleUnmatched = 0;
       let campaignSaved = false;
       let stopConditionMet = false;
       const savedCollectionIds: string[] = [];
@@ -249,6 +250,9 @@ export default class PostDownloader extends Downloader<Post> {
             case 'skippedUnviewable':
               skippedUnviewable++;
               break;
+            case 'skippedTitleUnmatched':
+              skippedTitleUnmatched++;
+              break;
           }
 
           if (this.checkAbortSignal(signal)) {
@@ -306,6 +310,9 @@ export default class PostDownloader extends Downloader<Post> {
         if (skippedPublishDateOutOfRange) {
           skippedStrParts.push(`${skippedPublishDateOutOfRange} with publish date out of range`);
         }
+        if (skippedTitleUnmatched) {
+          skippedStrParts.push(`${skippedTitleUnmatched} with title not matching pattern`);
+        }
         const skippedStr = skippedStrParts.length > 0 ? ` (skipped: ${skippedStrParts.join(', ')})` : '';
         endMessage = `Total ${downloaded} / ${postsFetcher.getTotal()} posts processed${skippedStr}`;
         this.log('info', endMessage);
@@ -329,7 +336,7 @@ export default class PostDownloader extends Downloader<Post> {
     statusCache: StatusCache,
     db: DBInstance,
     signal?: AbortSignal
-  ): Promise<{status: 'skippedUnviewable' | 'skippedUnmetMediaTypeCriteria' | 'skippedNotInTier' | 'skippedPublishDateOutOfRange' | 'aborted' | 'downloaded' }> {
+  ): Promise<{status: 'skippedUnviewable' | 'skippedUnmetMediaTypeCriteria' | 'skippedNotInTier' | 'skippedPublishDateOutOfRange' | 'skippedTitleUnmatched' | 'aborted' | 'downloaded' }> {
     this.log('info', `Download post #${post.id} (${post.title})`);
 
     const downloadPost = scope.includes('post');
@@ -386,6 +393,18 @@ export default class PostDownloader extends Downloader<Post> {
           });
           return {
             status: 'skippedPublishDateOutOfRange'
+          };
+        }
+        case 'titleUnmatched': {
+          this.log('warn', `Skipped downloading post #${post.id}: title does not match pattern`);
+          this.emit('targetEnd', {
+            target: post,
+            isSkipped: true,
+            skipReason: TargetSkipReason.TitleUnmatched,
+            skipMessage: 'Title does not match pattern'
+          });
+          return {
+            status: 'skippedTitleUnmatched'
           };
         }
       }

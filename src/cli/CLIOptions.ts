@@ -182,6 +182,7 @@ function getCLIIncludeOptions(commandLineOptions: CommandLineParseResult, config
       audio: CLIOptionValidator.validateString(pickDefined(commandLineOptions.include?.mediaByFilename?.audio, configFileOptions?.include?.mediaByFilename?.audio)) || null,
       attachments: CLIOptionValidator.validateString(pickDefined(commandLineOptions.include?.mediaByFilename?.attachments, configFileOptions?.include?.mediaByFilename?.attachments)) || null
     },
+    postsByTitle: CLIOptionValidator.validateString(pickDefined(commandLineOptions.include?.postsByTitle, configFileOptions?.include?.postsByTitle)) || null,
     comments: CLIOptionValidator.validateBoolean(pickDefined(commandLineOptions.include?.comments, configFileOptions?.include?.comments))
   };
 }
@@ -225,6 +226,7 @@ function readTargetsFile(file: string) {
     imagesByFilename: 'include.images.by.filename',
     audioByFilename: 'include.audio.by.filename',
     attachmentsByFilename: 'include.attachments.by.filename',
+    postsByTitle: 'include.posts.by.title',
     comments: 'include.comments'
   };
 
@@ -297,6 +299,9 @@ function readTargetsFile(file: string) {
                     break;
                 }
               }
+            else if (matchKey === includeKeys.postsByTitle) {
+              target.include.postsByTitle = entry;
+            }
             else {
               target.include[optName as keyof DownloaderIncludeOptions] = entry;
             }

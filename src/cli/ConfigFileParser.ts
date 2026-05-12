@@ -43,6 +43,7 @@ const CONFIG_FILE_PROPS = {
     imagesByFilename: 'include:images.by.filename',
     audioByFilename: 'include.audio.by.filename',
     attachmentsByFilename: 'include:attachments.by.filename',
+    postsByTitle: 'include:posts.by.title',
     comments: 'include:comments'
   },
   request: {
@@ -142,6 +143,7 @@ export default class ConfigFileParser {
           audio: __getValue(CONFIG_FILE_PROPS.include.audioByFilename),
           attachments: __getValue(CONFIG_FILE_PROPS.include.attachmentsByFilename)
         },
+        postsByTitle: __getValue(CONFIG_FILE_PROPS.include.postsByTitle),
         comments: __getValue(CONFIG_FILE_PROPS.include.comments)
       },
       request: {
